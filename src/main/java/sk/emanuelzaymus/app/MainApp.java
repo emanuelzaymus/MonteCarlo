@@ -1,14 +1,20 @@
+package sk.emanuelzaymus.app;
+
 import javafx.application.Application;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.stage.Stage;
+import javafx.fxml.FXMLLoader;
 
 import sk.emanuelzaymus.montecarlo.SeedGenerator;
 import sk.emanuelzaymus.robot.*;
 
-public class MainApp { //extends Application {
+import java.io.IOException;
+
+public class MainApp extends Application {
 
     public static void main(String[] args) {
 
@@ -24,11 +30,17 @@ public class MainApp { //extends Application {
 //        System.out.println(robotRun.getMovesCount());
 
 
-//        launch(args);
+        launch(args);
     }
 
-//    @Override
-//    public void start(Stage stage) {
+    @Override
+    public void start(Stage stage) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("sk/emanuelzaymus/app/sample2.fxml"));
+        stage.setTitle("Hello World");
+        stage.setScene(new Scene(root, 300, 275));
+        stage.show();
+
+
 //        stage.setTitle("Line Chart Sample");
 //        //defining the axes
 //        final NumberAxis xAxis = new NumberAxis();
@@ -61,5 +73,5 @@ public class MainApp { //extends Application {
 //
 //        stage.setScene(scene);
 //        stage.show();
-//    }
+    }
 }

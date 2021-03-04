@@ -31,7 +31,6 @@ public abstract class MonteCarlo {
 
     protected abstract void doReplication();
 
-
     protected void afterReplication() {
     }
 
