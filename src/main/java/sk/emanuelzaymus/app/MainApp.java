@@ -17,8 +17,8 @@ public class MainApp extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/mainView.fxml"));
+    public void start(final Stage primaryStage) throws IOException {
+        final Parent root = FXMLLoader.load(getClass().getResource("/mainView.fxml"));
         primaryStage.setTitle("MonteCarlo - Robot");
         primaryStage.setScene(new Scene(root, 900, 600));
 

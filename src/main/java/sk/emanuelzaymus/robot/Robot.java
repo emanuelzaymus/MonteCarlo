@@ -11,9 +11,11 @@ public class Robot {
     private final IntRandom fourWayRandom = new IntRandom(4);
 
     private MoveOption lastMove;
+    private final boolean useCustomStrategy;
 
     public Robot(boolean useCustomStrategy) {
-
+        this.useCustomStrategy = useCustomStrategy;
+        // TODO: Use custom strategy
     }
 
     public void restart() {

@@ -11,6 +11,7 @@ import javafx.util.Pair;
 import sk.emanuelzaymus.montecarlo.SeedGenerator;
 import sk.emanuelzaymus.robot.*;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 
@@ -18,6 +19,9 @@ public class MainController {
 
     private static final int ESTIMATIONS_COUNT = 1000;
     private static final String MOVES_COUNT_CHART_TITLE = "Average Moves Count";
+    private static final String K_MOVES_CHART_TITLE = "More Than K Moves Probability";
+    private static final int X_AXIS_TICK_UNITE = 1_000_000; // TODO: Calculate 1 / replicationsCount * 1000
+    private static final double Y_AXIS_TICK_UNITE = 0.001;
 
     private RobotMonteCarlo monteCarlo;
 
@@ -27,7 +31,7 @@ public class MainController {
     public TextField yTxtFld;
     public TextField replicCountTxtFld;
     public TextField skipPercentTxtFld;
-    public TextField kTxtFld;
+    public TextField kMovesTxtFld;
     public CheckBox useCustomStrategyCheckBox;
 
     public LineChart<Integer, Double> movesCountLineChart;
@@ -35,6 +39,8 @@ public class MainController {
     public NumberAxis movesCountYAxis;
 
     public LineChart<Integer, Double> moreThanKMovesLineChart;
+    public NumberAxis kMovesXAxis;
+    public NumberAxis kMovesYAxis;
 
     public MainController() {
         SeedGenerator.setSeed(1);
@@ -47,27 +53,40 @@ public class MainController {
         }
         doExperiment();
         showMovesCountResults();
+        showKMovesResults();
+    }
+
+    public void onStop(ActionEvent actionEvent) {
+        // TODO: Stop execution
     }
 
     private void showMovesCountResults() {
-        movesCountLineChart.getData().clear();
+        setLineChart(movesCountLineChart, movesCountXAxis, movesCountYAxis, monteCarlo.getSavedEstimations());
+        movesCountLineChart.setTitle(MOVES_COUNT_CHART_TITLE + ": " + monteCarlo.getAverageMovesCount());
+    }
+
+    private void showKMovesResults() {
+        setLineChart(moreThanKMovesLineChart, kMovesXAxis, kMovesYAxis, monteCarlo.getMoreThanKMovesProbabilities());
+        moreThanKMovesLineChart.setTitle(K_MOVES_CHART_TITLE + ": " + monteCarlo.getMoreThanKMovesProbability());
+    }
+
+    private void setLineChart(LineChart<Integer, Double> chart, NumberAxis xAxis, NumberAxis yAxis, List<Pair<Integer, Double>> estimations) {
+        chart.getData().clear();
         final var series = new XYChart.Series<Integer, Double>();
 
-        var savedEstimations = monteCarlo.getSavedEstimations();
-        var data = savedEstimations.stream()
+        final var data = estimations.stream()
                 .map(x -> new XYChart.Data<>(x.getKey(), x.getValue())).collect(Collectors.toList());
 
-        movesCountXAxis.setLowerBound(savedEstimations.stream().map(Pair::getKey).min(Integer::compareTo).orElseThrow());
-        movesCountXAxis.setUpperBound(savedEstimations.stream().map(Pair::getKey).max(Integer::compareTo).orElseThrow());
-        movesCountXAxis.setTickUnit(1000000);
+        xAxis.setLowerBound(estimations.stream().map(Pair::getKey).min(Integer::compareTo).orElseThrow());
+        xAxis.setUpperBound(estimations.stream().map(Pair::getKey).max(Integer::compareTo).orElseThrow());
+        xAxis.setTickUnit(X_AXIS_TICK_UNITE);
 
-        movesCountYAxis.setLowerBound(savedEstimations.stream().map(Pair::getValue).min(Double::compareTo).orElseThrow());
-        movesCountYAxis.setUpperBound(savedEstimations.stream().map(Pair::getValue).max(Double::compareTo).orElseThrow());
-        movesCountYAxis.setTickUnit(0.001);
+        yAxis.setLowerBound(estimations.stream().map(Pair::getValue).min(Double::compareTo).orElseThrow());
+        yAxis.setUpperBound(estimations.stream().map(Pair::getValue).max(Double::compareTo).orElseThrow());
+        yAxis.setTickUnit(Y_AXIS_TICK_UNITE);
 
         series.getData().addAll(data);
-        movesCountLineChart.getData().add(series);
-        movesCountLineChart.setTitle(MOVES_COUNT_CHART_TITLE + ": " + monteCarlo.getAverageMovesCount());
+        chart.getData().add(series);
     }
 
     private void doExperiment() {
@@ -78,20 +97,20 @@ public class MainController {
 
         final int replicCount = toInt(replicCountTxtFld);
         final double skipPercent = toDouble(skipPercentTxtFld);
-        final double k = toDouble(kTxtFld);
+        final int kMoves = toInt(kMovesTxtFld);
         final boolean useCustomStrategy = useCustomStrategyCheckBox.isSelected();
 
         final var robotRun = new RobotRun(new Playground(width, height), new Robot(useCustomStrategy), new Position(x, y));
-        monteCarlo = new RobotMonteCarlo(robotRun, replicCount, skipPercent, ESTIMATIONS_COUNT);
+        monteCarlo = new RobotMonteCarlo(robotRun, replicCount, skipPercent, kMoves, ESTIMATIONS_COUNT);
         monteCarlo.simulate();
     }
 
     private boolean inputsValid() {
         return isInt(widthTxtFld) && isInt(heightTxtFld) && isInt(xTxtFld) && isInt(yTxtFld) &&
-                isInt(replicCountTxtFld) && isDouble(skipPercentTxtFld) && isDouble(kTxtFld);
+                isInt(replicCountTxtFld) && isDouble(skipPercentTxtFld) && isInt(kMovesTxtFld);
     }
 
-    private boolean isInt(TextField textField) {
+    private boolean isInt(final TextField textField) {
         try {
             toInt(textField);
             return true;
@@ -100,11 +119,11 @@ public class MainController {
         }
     }
 
-    private int toInt(TextField textField) {
+    private int toInt(final TextField textField) {
         return Integer.parseInt(textField.getText());
     }
 
-    private boolean isDouble(TextField textField) {
+    private boolean isDouble(final TextField textField) {
         try {
             toDouble(textField);
             return true;
@@ -113,12 +132,12 @@ public class MainController {
         }
     }
 
-    private double toDouble(TextField textField) {
+    private double toDouble(final TextField textField) {
         return Double.parseDouble(textField.getText());
     }
 
     private void showInvalidInputAlert() {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+        final var alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Attention");
         alert.setHeaderText("Invalid Inputs");
         alert.setContentText("Make sure you put valid inputs, please.");
