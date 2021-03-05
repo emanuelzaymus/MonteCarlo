@@ -1,77 +1,35 @@
 package sk.emanuelzaymus.app;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
-import javafx.fxml.FXMLLoader;
-
-import sk.emanuelzaymus.montecarlo.SeedGenerator;
-import sk.emanuelzaymus.robot.*;
 
 import java.io.IOException;
 
 public class MainApp extends Application {
 
     public static void main(String[] args) {
-
-        SeedGenerator.setSeed(1);
-
-        var mc = new RobotMonteCarlo(new Playground(5, 4), new Position(2, 1),
-                10, 0, 1000);
-
-        mc.simulate();
-
-//        var robotRun = new RobotRun(new Playground(5, 4), new Robot(), new Position(2, 1));
-//        robotRun.run();
-//        System.out.println(robotRun.getMovesCount());
-
-
         launch(args);
     }
 
     @Override
-    public void start(Stage stage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("sk/emanuelzaymus/app/sample2.fxml"));
-        stage.setTitle("Hello World");
-        stage.setScene(new Scene(root, 300, 275));
-        stage.show();
+    public void start(Stage primaryStage) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/mainView.fxml"));
+        primaryStage.setTitle("MonteCarlo - Robot");
+        primaryStage.setScene(new Scene(root, 900, 600));
 
+        /* https://stackoverflow.com/questions/14357515/javafx-close-window-on-pressing-esc */
+        primaryStage.addEventHandler(KeyEvent.KEY_RELEASED, (KeyEvent event) -> {
+            if (KeyCode.ESCAPE == event.getCode()) {
+                primaryStage.close();
+            }
+        });
 
-//        stage.setTitle("Line Chart Sample");
-//        //defining the axes
-//        final NumberAxis xAxis = new NumberAxis();
-//        final NumberAxis yAxis = new NumberAxis();
-//        xAxis.setLabel("Number of Month");
-//        //creating the chart
-//        final LineChart<Number, Number> lineChart =
-//                new LineChart<Number, Number>(xAxis, yAxis);
-//
-//        lineChart.setTitle("Stock Monitoring, 2010");
-//        //defining a series
-//        XYChart.Series series = new XYChart.Series();
-//        series.setName("My portfolio");
-//        //populating the series with data
-//        series.getData().add(new XYChart.Data(1, 23));
-//        series.getData().add(new XYChart.Data(2, 14));
-//        series.getData().add(new XYChart.Data(3, 15));
-//        series.getData().add(new XYChart.Data(4, 24));
-//        series.getData().add(new XYChart.Data(5, 34));
-//        series.getData().add(new XYChart.Data(6, 36));
-//        series.getData().add(new XYChart.Data(7, 22));
-//        series.getData().add(new XYChart.Data(8, 45));
-//        series.getData().add(new XYChart.Data(9, 43));
-//        series.getData().add(new XYChart.Data(10, 17));
-//        series.getData().add(new XYChart.Data(11, 29));
-//        series.getData().add(new XYChart.Data(12, 25));
-//
-//        Scene scene = new Scene(lineChart, 800, 600);
-//        lineChart.getData().add(series);
-//
-//        stage.setScene(scene);
-//        stage.show();
+        primaryStage.show();
     }
+
 }

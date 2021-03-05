@@ -12,6 +12,10 @@ public class Robot {
 
     private MoveOption lastMove;
 
+    public Robot(boolean useCustomStrategy) {
+
+    }
+
     public void restart() {
         lastMove = null;
     }

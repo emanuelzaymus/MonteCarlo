@@ -27,9 +27,12 @@ public class RobotMonteCarlo extends MonteCarlo {
         savedEstimations = new LinkedList<>();
     }
 
-    public RobotMonteCarlo(final Playground playground, final Position startPosition, final int replicationsCount,
-                           final double skipPercent, final int estimationsCount) {
-        this(new RobotRun(playground, new Robot(), startPosition), replicationsCount, skipPercent, estimationsCount);
+    public List<Pair<Integer, Double>> getSavedEstimations() {
+        return savedEstimations;
+    }
+
+    public double getAverageMovesCount() {
+        return averageMovesCount;
     }
 
     @Override

@@ -12,7 +12,7 @@
     </columnConstraints>
     <rowConstraints>
         <RowConstraints maxHeight="170.0" minHeight="10.0" prefHeight="170.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="385.0" minHeight="230.0" prefHeight="230.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="1.7976931348623157E308" minHeight="230.0" prefHeight="230.0" vgrow="ALWAYS" />
     </rowConstraints>
 
     <children>
@@ -37,14 +37,14 @@
                 <Label text="Start Position" GridPane.rowIndex="3" />
                 <Label text="X:" GridPane.rowIndex="4" />
                 <Label text="Y:" GridPane.rowIndex="5" />
-                <TextField fx:id="widthTxtFld" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <TextField fx:id="widthTxtFld" text="5" GridPane.columnIndex="1" GridPane.rowIndex="1">
                     <GridPane.margin>
                         <Insets />
                     </GridPane.margin>
                 </TextField>
-                <TextField fx:id="heightTxtFld" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                <TextField GridPane.columnIndex="1" GridPane.rowIndex="4" fx:id="xTxtFld" />
-                <TextField fx:id="yTxtFld" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                <TextField fx:id="heightTxtFld" text="4" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <TextField text="3" GridPane.columnIndex="1" GridPane.rowIndex="4" fx:id="xTxtFld" />
+                <TextField fx:id="yTxtFld" text="2" GridPane.columnIndex="1" GridPane.rowIndex="5" />
             </children>
 
             <GridPane.margin>
@@ -73,12 +73,12 @@
                 <Label text="Skip (%):" GridPane.rowIndex="1" />
                 <Label text="More than K moves:" GridPane.rowIndex="2" />
                 <Label text="Use custom strategy:" GridPane.rowIndex="3" />
-                <Button fx:id="startBtn" maxWidth="1.7976931348623157E308" text="Start" GridPane.rowIndex="5" />
-                <Button fx:id="stopBtn" maxWidth="1.7976931348623157E308" text="Stop" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                <Button maxWidth="1.7976931348623157E308" onAction="#onStart" text="Start" GridPane.rowIndex="5" />
+                <Button maxWidth="1.7976931348623157E308" text="Stop" GridPane.columnIndex="1" GridPane.rowIndex="5" />
 
-                <TextField fx:id="replicCountTxtFld" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                <TextField fx:id="skipPercentTxtFld" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                <TextField fx:id="kTxtFld" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <TextField fx:id="replicCountTxtFld" text="10000" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                <TextField fx:id="skipPercentTxtFld" promptText="between 0 and  1" text="0.3" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <TextField fx:id="kTxtFld" text="5" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                 <CheckBox fx:id="useCustomStrategyCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             </children>
             <padding>
@@ -86,12 +86,12 @@
             </padding>
         </GridPane>
 
-        <LineChart fx:id="movesCountLineChart" title="Average Moves Count" GridPane.rowIndex="1">
+        <LineChart fx:id="movesCountLineChart" createSymbols="false" title="Average Moves Count" GridPane.rowIndex="1">
             <xAxis>
-                <NumberAxis side="BOTTOM" />
+                <NumberAxis fx:id="movesCountXAxis" autoRanging="false" label="Number Of Runs" side="BOTTOM" />
             </xAxis>
             <yAxis>
-                <NumberAxis side="LEFT" />
+                <NumberAxis fx:id="movesCountYAxis" autoRanging="false" label="Moves Count" side="LEFT" />
             </yAxis>
         </LineChart>
 
