@@ -32,8 +32,8 @@ public class RobotRun {
 
     public void run() {
         while (true) {
-            var possibleMoves = playground.getPossibleMoves(robotPosition);
-            var nextMove = robot.move(possibleMoves);
+            final var possibleMoves = playground.getPossibleMoves(robotPosition);
+            final var nextMove = robot.move(possibleMoves);
 
             robotPosition = playground.getNewPosition(robotPosition, nextMove);
             movesCount++;

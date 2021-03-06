@@ -64,6 +64,7 @@ public class MainController {
 
     public void onStop(ActionEvent actionEvent) {
         stateLabel.setText(STOPPED_STATE);
+        // TODO: Stop app.
     }
 
     private void showMovesCountResults() {
@@ -106,7 +107,8 @@ public class MainController {
         final int kMoves = toInt(kMovesTxtFld);
         final boolean useCustomStrategy = useCustomStrategyCheckBox.isSelected();
 
-        final var robotRun = new RobotRun(new Playground(width, height), new Robot(useCustomStrategy), new Position(x, y));
+        final var robot = !useCustomStrategy ? new RandomRobot() : new StrategyRobot();
+        final var robotRun = new RobotRun(new Playground(width, height), robot, new Position(x, y));
         monteCarlo = new RobotMonteCarlo(robotRun, replicationsCount, skipPercent, kMoves, ESTIMATIONS_COUNT);
         monteCarlo.simulate();
     }

@@ -72,14 +72,4 @@ public class Playground {
             throw new IllegalStateException("Robot was already here.");
     }
 
-//    public int visitedFieldsCount() {
-//        int ret = 0;
-//
-//        for (var line : visitedFields)
-//            for (boolean visited : line)
-//                if (visited) ret++;
-//
-//        return ret;
-//    }
-
 }

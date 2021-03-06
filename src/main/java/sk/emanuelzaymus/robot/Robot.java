@@ -4,38 +4,21 @@ import sk.emanuelzaymus.montecarlo.IntRandom;
 
 import java.util.List;
 
-public class Robot {
+public abstract class Robot {
 
     private final IntRandom twoWayRandom = new IntRandom(2);
     private final IntRandom threeWayRandom = new IntRandom(3);
     private final IntRandom fourWayRandom = new IntRandom(4);
 
-    private MoveOption lastMove;
-    private final boolean useCustomStrategy;
-
-    public Robot(boolean useCustomStrategy) {
-        this.useCustomStrategy = useCustomStrategy;
-        // TODO: Use custom strategy
-    }
+    protected MoveOption lastMove;
 
     public void restart() {
         lastMove = null;
     }
 
-    public MoveOption move(List<MoveOption> possibleMoves) {
-        if (lastMove != null)
-            possibleMoves.remove(lastMove.getOppositeMove());
+    public abstract MoveOption move(List<MoveOption> possibleMoves);
 
-        final int possibleMovesCount = possibleMoves.size();
-        final int nextMove = possibleMovesCount > 1 ? randomNextMove(possibleMovesCount) : 0;
-
-        var retMoveOption = possibleMoves.get(nextMove);
-        lastMove = retMoveOption;
-
-        return retMoveOption;
-    }
-
-    private int randomNextMove(final int possibleMovesCount) {
+    protected int randomNextMove(final int possibleMovesCount) {
         return getNWayRandom(possibleMovesCount).next();
     }
 
