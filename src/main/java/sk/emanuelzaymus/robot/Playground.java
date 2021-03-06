@@ -59,7 +59,7 @@ public class Playground {
         if (x >= 0 && x < width && y >= 0 && y < height) {
             return visitedFields[y][x];
         }
-        throw new IllegalStateException("Robot is out of the playground");
+        throw new IllegalStateException("Robot is out of the playground.");
     }
 
     public void markFieldVisited(Position robotPosition) {

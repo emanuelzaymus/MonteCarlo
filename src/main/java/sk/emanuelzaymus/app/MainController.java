@@ -6,6 +6,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.util.Pair;
 import sk.emanuelzaymus.montecarlo.SeedGenerator;
@@ -20,9 +21,11 @@ public class MainController {
     private static final int ESTIMATIONS_COUNT = 1000;
     private static final String MOVES_COUNT_CHART_TITLE = "Average Moves Count";
     private static final String K_MOVES_CHART_TITLE = "More Than K Moves Probability";
-    private static final int X_AXIS_TICK_UNITE = 1_000_000; // TODO: Calculate 1 / replicationsCount * 1000
-    private static final double Y_AXIS_TICK_UNITE = 0.001;
+    private static final String READY_STATE = "Ready";
+    private static final String RUNNING_STATE = "Running";
+    private static final String STOPPED_STATE = "Stopped";
 
+    private int replicationsCount;
     private RobotMonteCarlo monteCarlo;
 
     public TextField widthTxtFld;
@@ -33,6 +36,7 @@ public class MainController {
     public TextField skipPercentTxtFld;
     public TextField kMovesTxtFld;
     public CheckBox useCustomStrategyCheckBox;
+    public Label stateLabel;
 
     public LineChart<Integer, Double> movesCountLineChart;
     public NumberAxis movesCountXAxis;
@@ -43,7 +47,7 @@ public class MainController {
     public NumberAxis kMovesYAxis;
 
     public MainController() {
-        SeedGenerator.setSeed(1);
+        //SeedGenerator.setSeed(1);
     }
 
     public void onStart(ActionEvent actionEvent) {
@@ -51,13 +55,15 @@ public class MainController {
             showInvalidInputAlert();
             return;
         }
+        stateLabel.setText(RUNNING_STATE);
         doExperiment();
         showMovesCountResults();
         showKMovesResults();
+        stateLabel.setText(READY_STATE);
     }
 
     public void onStop(ActionEvent actionEvent) {
-        // TODO: Stop execution
+        stateLabel.setText(STOPPED_STATE);
     }
 
     private void showMovesCountResults() {
@@ -79,11 +85,11 @@ public class MainController {
 
         xAxis.setLowerBound(estimations.stream().map(Pair::getKey).min(Integer::compareTo).orElseThrow());
         xAxis.setUpperBound(estimations.stream().map(Pair::getKey).max(Integer::compareTo).orElseThrow());
-        xAxis.setTickUnit(X_AXIS_TICK_UNITE);
+        xAxis.setTickUnit(replicationsCount / 10.0);
 
         yAxis.setLowerBound(estimations.stream().map(Pair::getValue).min(Double::compareTo).orElseThrow());
         yAxis.setUpperBound(estimations.stream().map(Pair::getValue).max(Double::compareTo).orElseThrow());
-        yAxis.setTickUnit(Y_AXIS_TICK_UNITE);
+        yAxis.setTickUnit(100.0 / replicationsCount);
 
         series.getData().addAll(data);
         chart.getData().add(series);
@@ -95,13 +101,13 @@ public class MainController {
         final int x = toInt(xTxtFld);
         final int y = toInt(yTxtFld);
 
-        final int replicCount = toInt(replicCountTxtFld);
+        replicationsCount = toInt(replicCountTxtFld);
         final double skipPercent = toDouble(skipPercentTxtFld);
         final int kMoves = toInt(kMovesTxtFld);
         final boolean useCustomStrategy = useCustomStrategyCheckBox.isSelected();
 
         final var robotRun = new RobotRun(new Playground(width, height), new Robot(useCustomStrategy), new Position(x, y));
-        monteCarlo = new RobotMonteCarlo(robotRun, replicCount, skipPercent, kMoves, ESTIMATIONS_COUNT);
+        monteCarlo = new RobotMonteCarlo(robotRun, replicationsCount, skipPercent, kMoves, ESTIMATIONS_COUNT);
         monteCarlo.simulate();
     }
 

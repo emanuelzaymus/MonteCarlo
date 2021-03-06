@@ -44,9 +44,9 @@
                         <Insets/>
                     </GridPane.margin>
                 </TextField>
-                <TextField fx:id="heightTxtFld" text="4" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                <TextField text="3" GridPane.columnIndex="1" GridPane.rowIndex="4" fx:id="xTxtFld"/>
-                <TextField fx:id="yTxtFld" text="2" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                <TextField fx:id="heightTxtFld" text="5" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                <TextField text="0" GridPane.columnIndex="1" GridPane.rowIndex="4" fx:id="xTxtFld"/>
+                <TextField fx:id="yTxtFld" text="0" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
             </children>
 
             <GridPane.margin>
@@ -75,15 +75,17 @@
                 <Label text="Skip (%):" GridPane.rowIndex="1"/>
                 <Label text="More than K moves:" GridPane.rowIndex="2"/>
                 <Label text="Use custom strategy:" GridPane.rowIndex="3"/>
+                <Label text="State:" GridPane.rowIndex="4"/>
                 <Button maxWidth="1.7976931348623157E308" onAction="#onStart" text="Start" GridPane.rowIndex="5"/>
                 <Button maxWidth="1.7976931348623157E308" onAction="#onStop" text="Stop" GridPane.columnIndex="1"
                         GridPane.rowIndex="5"/>
 
-                <TextField fx:id="replicCountTxtFld" text="10000" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                <TextField fx:id="replicCountTxtFld" text="20000000" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                 <TextField fx:id="skipPercentTxtFld" promptText="between 0 and  1" text="0.3" GridPane.columnIndex="1"
                            GridPane.rowIndex="1"/>
                 <TextField fx:id="kMovesTxtFld" text="5" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                 <CheckBox fx:id="useCustomStrategyCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                <Label fx:id="stateLabel" text="Ready" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
             </children>
             <padding>
                 <Insets bottom="7.0" left="7.0" right="7.0" top="7.0"/>
@@ -102,10 +104,10 @@
         <LineChart fx:id="moreThanKMovesLineChart" createSymbols="false" title="More Than K Moves Probability"
                    GridPane.columnIndex="1" GridPane.rowIndex="1">
             <xAxis>
-                <NumberAxis fx:id="kMovesXAxis" side="BOTTOM" autoRanging="false" label="Number Of Runs"/>
+                <NumberAxis fx:id="kMovesXAxis" autoRanging="false" label="Number Of Runs" side="BOTTOM"/>
             </xAxis>
             <yAxis>
-                <NumberAxis fx:id="kMovesYAxis" side="LEFT" autoRanging="false" label="Probability"/>
+                <NumberAxis fx:id="kMovesYAxis" autoRanging="false" label="Probability" side="LEFT"/>
             </yAxis>
         </LineChart>
 

@@ -31,21 +31,19 @@ public class RobotRun {
     }
 
     public void run() {
-        //noinspection UnusedAssignment
-        boolean wasThere = false;
-
-        do {
+        while (true) {
             var possibleMoves = playground.getPossibleMoves(robotPosition);
             var nextMove = robot.move(possibleMoves);
 
             robotPosition = playground.getNewPosition(robotPosition, nextMove);
-            wasThere = playground.wasHere(robotPosition);
+            movesCount++;
 
-            if (!wasThere) {
+            if (!playground.wasHere(robotPosition)) {
                 playground.markFieldVisited(robotPosition);
-                movesCount++;
+            } else {
+                break;
             }
-        } while (!wasThere);
+        }
     }
 
 }
