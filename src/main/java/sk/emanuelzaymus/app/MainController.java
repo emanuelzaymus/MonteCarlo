@@ -1,6 +1,5 @@
 package sk.emanuelzaymus.app;
 
-import javafx.event.ActionEvent;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -9,10 +8,10 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.util.Pair;
-import sk.emanuelzaymus.montecarlo.SeedGenerator;
 import sk.emanuelzaymus.robot.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 
@@ -23,7 +22,6 @@ public class MainController {
     private static final String K_MOVES_CHART_TITLE = "More Than K Moves Probability";
     private static final String READY_STATE = "Ready";
     private static final String RUNNING_STATE = "Running";
-    private static final String STOPPED_STATE = "Stopped";
 
     private int replicationsCount;
     private RobotMonteCarlo monteCarlo;
@@ -46,25 +44,43 @@ public class MainController {
     public NumberAxis kMovesXAxis;
     public NumberAxis kMovesYAxis;
 
-    public MainController() {
-        //SeedGenerator.setSeed(1);
-    }
-
-    public void onStart(ActionEvent actionEvent) {
+    public void onStart() {
         if (!inputsValid()) {
             showInvalidInputAlert();
             return;
         }
+
+        monteCarlo = getNewExperiment();
+        Thread simulationThread = new Thread(monteCarlo);
+        simulationThread.start();
+
         stateLabel.setText(RUNNING_STATE);
-        doExperiment();
+    }
+
+    public void onStop() {
+        monteCarlo.stop();
+    }
+
+    private RobotMonteCarlo getNewExperiment() {
+        final int width = toInt(widthTxtFld);
+        final int height = toInt(heightTxtFld);
+        final int x = toInt(xTxtFld);
+        final int y = toInt(yTxtFld);
+
+        replicationsCount = toInt(replicCountTxtFld);
+        final double skipPercent = toDouble(skipPercentTxtFld);
+        final int kMoves = toInt(kMovesTxtFld);
+        final boolean useCustomStrategy = useCustomStrategyCheckBox.isSelected();
+
+        final var robot = !useCustomStrategy ? new RandomRobot() : new StrategyRobot();
+        final var robotRun = new RobotRun(new Playground(width, height), robot, new Position(x, y));
+        return new RobotMonteCarlo(robotRun, replicationsCount, skipPercent, kMoves, ESTIMATIONS_COUNT, this::showResults);
+    }
+
+    private void showResults() {
         showMovesCountResults();
         showKMovesResults();
         stateLabel.setText(READY_STATE);
-    }
-
-    public void onStop(ActionEvent actionEvent) {
-        stateLabel.setText(STOPPED_STATE);
-        // TODO: Stop app.
     }
 
     private void showMovesCountResults() {
@@ -84,33 +100,19 @@ public class MainController {
         final var data = estimations.stream()
                 .map(x -> new XYChart.Data<>(x.getKey(), x.getValue())).collect(Collectors.toList());
 
-        xAxis.setLowerBound(estimations.stream().map(Pair::getKey).min(Integer::compareTo).orElseThrow());
-        xAxis.setUpperBound(estimations.stream().map(Pair::getKey).max(Integer::compareTo).orElseThrow());
-        xAxis.setTickUnit(replicationsCount / 10.0);
+        try {
+            xAxis.setLowerBound(estimations.stream().map(Pair::getKey).min(Integer::compareTo).orElseThrow());
+            xAxis.setUpperBound(estimations.stream().map(Pair::getKey).max(Integer::compareTo).orElseThrow());
+            xAxis.setTickUnit(replicationsCount / 10.0);
 
-        yAxis.setLowerBound(estimations.stream().map(Pair::getValue).min(Double::compareTo).orElseThrow());
-        yAxis.setUpperBound(estimations.stream().map(Pair::getValue).max(Double::compareTo).orElseThrow());
-        yAxis.setTickUnit(100.0 / replicationsCount);
+            yAxis.setLowerBound(estimations.stream().map(Pair::getValue).min(Double::compareTo).orElseThrow());
+            yAxis.setUpperBound(estimations.stream().map(Pair::getValue).max(Double::compareTo).orElseThrow());
+            yAxis.setTickUnit(100.0 / replicationsCount);
+        } catch (NoSuchElementException ignored) {
+        }
 
         series.getData().addAll(data);
         chart.getData().add(series);
-    }
-
-    private void doExperiment() {
-        final int width = toInt(widthTxtFld);
-        final int height = toInt(heightTxtFld);
-        final int x = toInt(xTxtFld);
-        final int y = toInt(yTxtFld);
-
-        replicationsCount = toInt(replicCountTxtFld);
-        final double skipPercent = toDouble(skipPercentTxtFld);
-        final int kMoves = toInt(kMovesTxtFld);
-        final boolean useCustomStrategy = useCustomStrategyCheckBox.isSelected();
-
-        final var robot = !useCustomStrategy ? new RandomRobot() : new StrategyRobot();
-        final var robotRun = new RobotRun(new Playground(width, height), robot, new Position(x, y));
-        monteCarlo = new RobotMonteCarlo(robotRun, replicationsCount, skipPercent, kMoves, ESTIMATIONS_COUNT);
-        monteCarlo.simulate();
     }
 
     private boolean inputsValid() {

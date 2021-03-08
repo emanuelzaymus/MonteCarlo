@@ -93,7 +93,8 @@
             </padding>
         </GridPane>
 
-        <LineChart fx:id="movesCountLineChart" createSymbols="false" title="Average Moves Count" GridPane.rowIndex="1">
+        <LineChart fx:id="movesCountLineChart" createSymbols="false" title="Average Moves Count" GridPane.rowIndex="1"
+                   legendVisible="false">
             <xAxis>
                 <NumberAxis fx:id="movesCountXAxis" autoRanging="false" label="Number Of Runs" side="BOTTOM"/>
             </xAxis>
@@ -103,7 +104,7 @@
         </LineChart>
 
         <LineChart fx:id="moreThanKMovesLineChart" createSymbols="false" title="More Than K Moves Probability"
-                   GridPane.columnIndex="1" GridPane.rowIndex="1">
+                   GridPane.columnIndex="1" GridPane.rowIndex="1" legendVisible="false">
             <xAxis>
                 <NumberAxis fx:id="kMovesXAxis" autoRanging="false" label="Number Of Runs" side="BOTTOM"/>
             </xAxis>

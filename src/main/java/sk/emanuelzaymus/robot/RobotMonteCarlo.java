@@ -1,5 +1,6 @@
 package sk.emanuelzaymus.robot;
 
+import javafx.application.Platform;
 import javafx.util.Pair;
 import sk.emanuelzaymus.montecarlo.MonteCarlo;
 
@@ -12,14 +13,15 @@ public class RobotMonteCarlo extends MonteCarlo {
     private final int kMoves;
     private final int saveFromReplic;
     private final int saveEveryReplic;
+    private final Runnable afterSimulationCallback;
 
     private final List<Pair<Integer, Double>> savedEstimations;
     private double averageMovesCount;
     private final List<Pair<Integer, Double>> moreThanKMovesProbabilities;
     private double moreThanKMovesProbability;
 
-    public RobotMonteCarlo(RobotRun robotRun, final int replicationsCount, final double skipPercent,
-                           final int kMoves, final int estimationsCount) {
+    public RobotMonteCarlo(final RobotRun robotRun, final int replicationsCount, final double skipPercent,
+                           final int kMoves, final int estimationsCount, final Runnable afterSimulationCallback) {
         super(replicationsCount);
         if (robotRun == null) throw new IllegalArgumentException("RobotRun is null.");
 
@@ -29,6 +31,7 @@ public class RobotMonteCarlo extends MonteCarlo {
         saveEveryReplic = replicationsCount - saveFromReplic > estimationsCount
                 ? (replicationsCount - saveFromReplic) / estimationsCount
                 : 1;
+        this.afterSimulationCallback = afterSimulationCallback;
         savedEstimations = new LinkedList<>();
         moreThanKMovesProbabilities = new LinkedList<>();
     }
@@ -75,9 +78,13 @@ public class RobotMonteCarlo extends MonteCarlo {
 
         if (saveEstimation()) {
             savedEstimations.add(new Pair<>(currentReplicNumber, averageMovesCount));
-//            System.out.printf("%d. repl = %d  -> avg: %f\n", currentReplicNumber, movesCount, averageMovesCount);
             moreThanKMovesProbabilities.add(new Pair<>(currentReplicNumber, moreThanKMovesProbability));
         }
+    }
+
+    @Override
+    protected void afterSimulation() {
+        Platform.runLater(afterSimulationCallback);
     }
 
     private boolean saveEstimation() {

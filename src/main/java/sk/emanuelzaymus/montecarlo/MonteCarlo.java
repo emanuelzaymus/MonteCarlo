@@ -1,12 +1,26 @@
 package sk.emanuelzaymus.montecarlo;
 
-public abstract class MonteCarlo {
+public abstract class MonteCarlo implements Runnable {
 
     private final int replicationsCount;
     protected int currentReplicNumber;
+    private boolean stopped = false;
 
     public MonteCarlo(int replicationsCount) {
         this.replicationsCount = replicationsCount;
+    }
+
+    public final synchronized boolean isStopped() {
+        return stopped;
+    }
+
+    public final synchronized void stop() {
+        stopped = true;
+    }
+
+    @Override
+    public void run() {
+        simulate();
     }
 
     public final void simulate() {
@@ -18,6 +32,8 @@ public abstract class MonteCarlo {
             beforeReplication();
             doReplication();
             afterReplication();
+
+            if (isStopped()) break;
         }
 
         afterSimulation();
