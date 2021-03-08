@@ -16,13 +16,15 @@ public class RobotRun {
         this.playground = playground;
         this.robot = robot;
         this.startPosition = startPosition;
-        restart();
     }
 
     public int getMovesCount() {
         return movesCount;
     }
 
+    /**
+     * This method needs to be called after creation of this object.
+     */
     public void restart() {
         playground.restart(startPosition);
         robot.restart();
@@ -35,7 +37,7 @@ public class RobotRun {
             final var possibleMoves = playground.getPossibleMoves(robotPosition);
             final var nextMove = robot.move(possibleMoves);
 
-            robotPosition = playground.getNewPosition(robotPosition, nextMove);
+            robotPosition = nextMove.moveFromPosition(robotPosition);
             movesCount++;
 
             if (!playground.wasHere(robotPosition)) {
@@ -44,6 +46,11 @@ public class RobotRun {
                 break;
             }
         }
+    }
+
+    public void print() {
+        playground.print();
+        ((StrategyRobot) robot).print();
     }
 
 }

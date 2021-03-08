@@ -8,67 +8,71 @@ public class StrategyRobot extends Robot {
     private final int mapperExpandSize = 10;
     private final Position startPosition = new Position(mapperSize / 2, mapperSize / 2);
 
-    private final PlaygroundMapper mapper = new PlaygroundMapper(mapperSize, mapperExpandSize);
+    private final PlaygroundMapper mapper = new PlaygroundMapper(mapperSize, mapperSize, mapperExpandSize);
     private Position myPosition;
-    private boolean firstEndOfPlaygroundFound = false;
+    private boolean firstEndOfPlaygroundFound;
 
-    public StrategyRobot() {
-        restart();
-    }
-
+    /**
+     * This method needs to be called after creation of this object.
+     */
     @Override
     public void restart() {
         super.restart();
         myPosition = startPosition;
         mapper.restart(startPosition);
+        firstEndOfPlaygroundFound = false;
     }
 
     @Override
     public MoveOption move(List<MoveOption> possibleMoves) {
-        MoveOption ret;
-        // Save not present move options as end of playground.
-        mapper.analyse(possibleMoves, myPosition);
-        // myPosition = mapper.analyse(possibleMoves, myPosition); // TODO
+        MoveOption retMove;
+        // Save not present move options as end of playground. Returns updated position in case of expansion.
+        myPosition = mapper.analyse(possibleMoves, myPosition);
 
-        if (lastMove == null) {
-            // If this is the fist move - choose randomly.
-            ret = possibleMoves.get(randomNextMove(possibleMoves.size()));
+        List<MoveOption> unvisited = mapper.getPossibleMoves(myPosition);
+
+        if (lastMove == null || unvisited.isEmpty()) {
+            // If this is the fist move OR I have no choice - choose randomly.
+            retMove = possibleMoves.get(randomNextMove(possibleMoves.size()));
+
+        } else if (unvisited.size() == 1) {
+            // If I have only one option - choose the option.
+            retMove = unvisited.get(0);
+
         } else {
-            List<MoveOption> unvisited = mapper.getPossibleMoves(myPosition);
+            // Possible directions
+            final var goRight = DirectionalMove.toTheRight(lastMove);
+            final var goLeft = DirectionalMove.toTheLeft(lastMove);
+            final var goStraight = lastMove;
 
-            // If I cannot go straight AND I haven't find end of playground yet => GO RIGHT
-            if (!unvisited.contains(lastMove) && !firstEndOfPlaygroundFound) {
-                ret = DirectionalMoves.toTheRight(lastMove);
-                firstEndOfPlaygroundFound = true;
+            if (!unvisited.contains(goStraight)) {
+                if (!firstEndOfPlaygroundFound && unvisited.contains(goRight)) {
+                    // If I cannot go straight AND I haven't find end of playground yet AND I can go right => GO RIGHT
+                    retMove = goRight;
+                    firstEndOfPlaygroundFound = true;
+                } else if (unvisited.contains(goLeft)) {
+                    // If I cannot go straight AND I cannot go right AND I con go left => GO LEFT
+                    retMove = goLeft;
 
-            } else if (!unvisited.contains(lastMove)) {
-                ret = DirectionalMoves.toTheLeft(lastMove); // If I cannot go straight => GO LEFT
+                } else throw new IllegalStateException("You should not get here.");
 
-            } else if (unvisited.contains(DirectionalMoves.toTheRight(lastMove))) {
-                ret = DirectionalMoves.toTheRight(lastMove); // If I can go right => GO RIGHT
+            } else if (unvisited.contains(goRight)) {
+                retMove = goRight; // If I can go straight AND I can go right => GO RIGHT
 
-            } else {
-                ret = DirectionalMoves.toTheLeft(lastMove); // Else => GO LEFT
-            }
+            } else if (unvisited.contains(goStraight)) {
+                retMove = goStraight; // If I cannot go right AND I can go straight => GO STRAIGHT
+
+            } else throw new IllegalStateException("You should not get here.");
         }
 
-        myPosition = getNewPosition(ret);
+        myPosition = retMove.moveFromPosition(myPosition);
         mapper.setFieldVisited(myPosition);
-        lastMove = ret;
-        return ret;
+        lastMove = retMove;
+        return retMove;
     }
 
-    private Position getNewPosition(final MoveOption move) {
-        int x = myPosition.getX();
-        int y = myPosition.getY();
-
-        if (move == MoveOption.UP) y--;
-        else if (move == MoveOption.DOWN) y++;
-        else if (move == MoveOption.RIGHT) x++;
-        else if (move == MoveOption.LEFT) x--;
-        else throw new IllegalStateException("Next move was probably null.");
-
-        return new Position(x, y);
+    public void print() {
+        mapper.print();
     }
 
 }

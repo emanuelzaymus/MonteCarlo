@@ -1,6 +1,6 @@
 package sk.emanuelzaymus.robot;
 
-public class DirectionalMoves {
+public class DirectionalMove {
 
     public static MoveOption toTheRight(final MoveOption lastMove) {
         return switch (lastMove) {

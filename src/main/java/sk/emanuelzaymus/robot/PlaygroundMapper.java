@@ -5,36 +5,54 @@ import java.util.List;
 
 public class PlaygroundMapper {
 
+    private final int initialMapWidth;
+    private final int initialMapHeight;
     private final int expandSize;
-    private int width; // xMin xMax
-    private int height; // yMin yMax TODO
+    private int width;
+    private int height;
     private Boolean[][] fieldMap;
 
-    public PlaygroundMapper(final int size, final int expandSize) {
+    public PlaygroundMapper(final int initialMapWidth, final int initialMapHeight, final int expandSize) {
+        this.initialMapWidth = initialMapWidth;
+        this.initialMapHeight = initialMapHeight;
         this.expandSize = expandSize;
-        width = size;
-        height = size;
     }
 
+    /**
+     * This method needs to be called after creation of this object.
+     *
+     * @param startPosition Robot start position to be marked as visited
+     */
     public void restart(final Position startPosition) {
-        fieldMap = getEmptyFieldMap(height, width);
+        width = initialMapWidth;
+        height = initialMapHeight;
+        fieldMap = getEmptyFieldMap(initialMapWidth, initialMapHeight);
         setFieldVisited(startPosition);
     }
 
-    // Returns updated position in case of expansion
-    // public Position analyse(final List<MoveOption> possibleMoves, final Position myPosition)
-    public void analyse(final List<MoveOption> possibleMoves, final Position myPosition) {
-        if (!possibleMoves.contains(MoveOption.UP))
-            setFieldEndOfPlayground(myPosition.getX(), myPosition.getY() - 1);
+    /**
+     * Analyses possible moves and sets not present moves as end of playground. Does fieldMap expansion if it is needed.
+     *
+     * @param possibleMoves Possible moves to be analysed
+     * @param myPosition    Robot's current position
+     * @return Returns updated robot position in case of fieldMap expansion
+     */
+    public Position analyse(final List<MoveOption> possibleMoves, final Position myPosition) {
+        final var expandedPosition = expandIfNecessary(myPosition);
 
-        if (!possibleMoves.contains(MoveOption.DOWN))
-            setFieldEndOfPlayground(myPosition.getX(), myPosition.getY() + 1);
-
-        if (!possibleMoves.contains(MoveOption.LEFT))
-            setFieldEndOfPlayground(myPosition.getX() - 1, myPosition.getY());
-
-        if (!possibleMoves.contains(MoveOption.RIGHT))
-            setFieldEndOfPlayground(myPosition.getX() + 1, myPosition.getY());
+        if (!possibleMoves.contains(MoveOption.UP)) {
+            setFieldEndOfPlayground(expandedPosition.getX(), expandedPosition.getY() - 1);
+        }
+        if (!possibleMoves.contains(MoveOption.DOWN)) {
+            setFieldEndOfPlayground(expandedPosition.getX(), expandedPosition.getY() + 1);
+        }
+        if (!possibleMoves.contains(MoveOption.LEFT)) {
+            setFieldEndOfPlayground(expandedPosition.getX() - 1, expandedPosition.getY());
+        }
+        if (!possibleMoves.contains(MoveOption.RIGHT)) {
+            setFieldEndOfPlayground(expandedPosition.getX() + 1, expandedPosition.getY());
+        }
+        return expandedPosition;
     }
 
     public List<MoveOption> getPossibleMoves(final Position myPosition) {
@@ -50,16 +68,6 @@ public class PlaygroundMapper {
         return ret;
     }
 
-    private Boolean[][] getEmptyFieldMap(final int height, final int width) {
-        var map = new Boolean[height][width];
-
-        for (int y = 0; y < height; y++)
-            for (int x = 0; x < width; x++)
-                map[y][x] = false;
-
-        return map;
-    }
-
     public void setFieldVisited(Position position) {
         setField(position.getX(), position.getY(), true);
     }
@@ -69,20 +77,38 @@ public class PlaygroundMapper {
     }
 
     private void setField(final int x, final int y, final Boolean value) {
-        checkFiledMapArea(x, y);
         fieldMap[y][x] = value;
     }
 
-    private void checkFiledMapArea(final int x, final int y) {
-        // TODO expanziou sa to cele pokazi, prestane platit myPosition - mozno zmenit myPosition
-        if (y <= 0) // 0 ???
+    private Boolean[][] getEmptyFieldMap(final int width, final int height) {
+        var map = new Boolean[height][width];
+
+        for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++)
+                map[y][x] = false;
+
+        return map;
+    }
+
+    private Position expandIfNecessary(final Position position) {
+        int x = position.getX();
+        int y = position.getY();
+
+        if (y - 1 < 0) {
             expandFieldMapUpward();
-        if (y >= height)
+            y += expandSize;
+        }
+        if (y + 1 >= height) {
             expandFieldMapDownward();
-        if (x <= 0) // 0 ???
+        }
+        if (x - 1 < 0) {
             expandFieldMapLeftward();
-        if (x >= width)
+            x += expandSize;
+        }
+        if (x + 1 >= width) {
             expandFieldMapRightward();
+        }
+        return new Position(x, y);
     }
 
     private void expandFieldMapUpward() {
@@ -95,7 +121,7 @@ public class PlaygroundMapper {
 
     private void expandFieldMapVertically(final boolean up) {
         final int newHeight = height + expandSize;
-        var newFieldMap = getEmptyFieldMap(newHeight, width);
+        var newFieldMap = getEmptyFieldMap(width, newHeight);
 
         System.arraycopy(fieldMap, 0, newFieldMap, up ? expandSize : 0, height);
 
@@ -113,7 +139,7 @@ public class PlaygroundMapper {
 
     private void expandFieldMapHorizontally(final boolean left) {
         final int newWidth = width + expandSize;
-        var newFieldMap = getEmptyFieldMap(height, newWidth);
+        var newFieldMap = getEmptyFieldMap(newWidth, height);
 
         for (int i = 0; i < height; i++) {
             System.arraycopy(fieldMap[i], 0, newFieldMap[i], left ? expandSize : 0, width);
@@ -121,6 +147,17 @@ public class PlaygroundMapper {
 
         fieldMap = newFieldMap;
         width = newWidth;
+    }
+
+    public void print() {
+        System.out.println("PlaygroundMapper:");
+        for (var line : fieldMap) {
+            for (var b : line) {
+                System.out.print(" " + (b == null ? 'X' : b ? 't' : 'f'));
+            }
+            System.out.println();
+        }
+        System.out.println();
     }
 
 }

@@ -39,19 +39,6 @@ public class Playground {
         return ret;
     }
 
-    public Position getNewPosition(Position robotPosition, MoveOption nextMove) {
-        int x = robotPosition.getX();
-        int y = robotPosition.getY();
-
-        if (nextMove == MoveOption.UP) y--;
-        else if (nextMove == MoveOption.DOWN) y++;
-        else if (nextMove == MoveOption.RIGHT) x++;
-        else if (nextMove == MoveOption.LEFT) x--;
-        else throw new IllegalStateException("Next move was probably null.");
-
-        return new Position(x, y);
-    }
-
     public boolean wasHere(Position robotPosition) {
         final int x = robotPosition.getX();
         final int y = robotPosition.getY();
@@ -70,6 +57,17 @@ public class Playground {
             visitedFields[y][x] = true;
         } else
             throw new IllegalStateException("Robot was already here.");
+    }
+
+    public void print() {
+        System.out.println("Playground:");
+        for (var line : visitedFields) {
+            for (var b : line) {
+                System.out.print(" " + (b ? 'T' : 'F'));
+            }
+            System.out.println();
+        }
+        System.out.println();
     }
 
 }
