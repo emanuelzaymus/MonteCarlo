@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-
 public class MainController {
 
     private static final int ESTIMATIONS_COUNT = 1000;
@@ -44,6 +43,9 @@ public class MainController {
     public NumberAxis kMovesXAxis;
     public NumberAxis kMovesYAxis;
 
+    /**
+     * On Start button clicked method. Validates all inputs and starts simulation.
+     */
     public void onStart() {
         if (!inputsValid()) {
             showInvalidInputAlert();
@@ -57,6 +59,9 @@ public class MainController {
         stateLabel.setText(RUNNING_STATE);
     }
 
+    /**
+     * On Stop button clicked method. Ends execution on simulation.
+     */
     public void onStop() {
         monteCarlo.stop();
     }

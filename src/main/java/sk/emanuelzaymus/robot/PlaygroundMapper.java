@@ -3,6 +3,9 @@ package sk.emanuelzaymus.robot;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Represents mapping utility of the playground for StrategyRobot.
+ */
 public class PlaygroundMapper {
 
     private final int initialMapWidth;
@@ -12,6 +15,13 @@ public class PlaygroundMapper {
     private int height;
     private Boolean[][] fieldMap;
 
+    /**
+     * Playground mapping utility for StrategyRobot. Created inner representation of the playground based on robots inputs using method analyse.
+     *
+     * @param initialMapWidth  Initial width of inner map
+     * @param initialMapHeight Initial width of inner map
+     * @param expandSize       Expand size of inner map
+     */
     public PlaygroundMapper(final int initialMapWidth, final int initialMapHeight, final int expandSize) {
         this.initialMapWidth = initialMapWidth;
         this.initialMapHeight = initialMapHeight;
@@ -31,11 +41,11 @@ public class PlaygroundMapper {
     }
 
     /**
-     * Analyses possible moves and sets not present moves as end of playground. Does fieldMap expansion if it is needed.
+     * Analyses possible moves and sets not present moves as end of playground. It does fieldMap expansion if it is needed.
      *
      * @param possibleMoves Possible moves to be analysed
      * @param myPosition    Robot's current position
-     * @return Returns updated robot position in case of fieldMap expansion
+     * @return Updated robot position in case of fieldMap expansion
      */
     public Position analyse(final List<MoveOption> possibleMoves, final Position myPosition) {
         final var expandedPosition = expandIfNecessary(myPosition);
@@ -55,6 +65,10 @@ public class PlaygroundMapper {
         return expandedPosition;
     }
 
+    /**
+     * @param myPosition Current robot position
+     * @return All possible moves where the robot has not been yet.
+     */
     public List<MoveOption> getPossibleMoves(final Position myPosition) {
         var ret = new LinkedList<MoveOption>();
         final int x = myPosition.getX();
@@ -68,7 +82,12 @@ public class PlaygroundMapper {
         return ret;
     }
 
-    public void setFieldVisited(Position position) {
+    /**
+     * Set the position to visited.
+     *
+     * @param position Position to be set to visited
+     */
+    public void setFieldVisited(final Position position) {
         setField(position.getX(), position.getY(), true);
     }
 
@@ -149,6 +168,9 @@ public class PlaygroundMapper {
         width = newWidth;
     }
 
+    /**
+     * Print current state of playground mapper. Debug purpose.
+     */
     public void print() {
         System.out.println("PlaygroundMapper:");
         for (var line : fieldMap) {

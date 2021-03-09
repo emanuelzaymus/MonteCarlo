@@ -12,17 +12,23 @@ import java.io.IOException;
 
 public class MainApp extends Application {
 
+    /**
+     * Application entry point.
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
+    /**
+     * Starts the application and shows the window.
+     */
     @Override
     public void start(final Stage primaryStage) throws IOException {
         final Parent root = FXMLLoader.load(getClass().getResource("/mainView.fxml"));
         primaryStage.setTitle("MonteCarlo - Robot");
         primaryStage.setScene(new Scene(root, 900, 600));
 
-        /* https://stackoverflow.com/questions/14357515/javafx-close-window-on-pressing-esc */
+        /* Source: https://stackoverflow.com/questions/14357515/javafx-close-window-on-pressing-esc */
         primaryStage.addEventHandler(KeyEvent.KEY_RELEASED, (KeyEvent event) -> {
             if (KeyCode.ESCAPE == event.getCode()) {
                 primaryStage.close();

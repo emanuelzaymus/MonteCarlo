@@ -7,6 +7,9 @@ import sk.emanuelzaymus.montecarlo.MonteCarlo;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Monte Carlo simulation for the robot on the playground problem.
+ */
 public class RobotMonteCarlo extends MonteCarlo {
 
     private final RobotRun robotRun;
@@ -20,6 +23,16 @@ public class RobotMonteCarlo extends MonteCarlo {
     private final List<Pair<Integer, Double>> moreThanKMovesProbabilities;
     private double moreThanKMovesProbability;
 
+    /**
+     * Creates new Robot Monte Carlo simulation.
+     *
+     * @param robotRun                RobotRun to execute every replication
+     * @param replicationsCount       Number of replications to execute
+     * @param skipPercent             How many percent of the estimations to skip before saving
+     * @param kMoves                  Count probability of the robot passing more than K moves before failing
+     * @param estimationsCount        How many estimations to save
+     * @param afterSimulationCallback After simulation callback method
+     */
     public RobotMonteCarlo(final RobotRun robotRun, final int replicationsCount, final double skipPercent,
                            final int kMoves, final int estimationsCount, final Runnable afterSimulationCallback) {
         super(replicationsCount);
@@ -36,22 +49,37 @@ public class RobotMonteCarlo extends MonteCarlo {
         moreThanKMovesProbabilities = new LinkedList<>();
     }
 
+    /**
+     * @return Saved estimations of the average number of moves the robot has done
+     */
     public List<Pair<Integer, Double>> getSavedEstimations() {
         return savedEstimations;
     }
 
+    /**
+     * @return Average number of moves the robot has done
+     */
     public double getAverageMovesCount() {
         return averageMovesCount;
     }
 
+    /**
+     * @return Probability of the robot making more than K moves
+     */
     public double getMoreThanKMovesProbability() {
         return moreThanKMovesProbability;
     }
 
+    /**
+     * @return Saved estimations of probabilities that the robot makes more than K moves
+     */
     public List<Pair<Integer, Double>> getMoreThanKMovesProbabilities() {
         return moreThanKMovesProbabilities;
     }
 
+    /**
+     * Clears all results.
+     */
     @Override
     protected void beforeSimulation() {
         savedEstimations.clear();
@@ -60,16 +88,26 @@ public class RobotMonteCarlo extends MonteCarlo {
         moreThanKMovesProbability = 0;
     }
 
+    /**
+     * Restarts robot run.
+     */
     @Override
     protected void beforeReplication() {
         robotRun.restart();
     }
 
+    /**
+     * Runs robot run.
+     */
     @Override
     protected void doReplication() {
         robotRun.run();
     }
 
+    /**
+     * Counts average number of count and probability of passing more than K moves
+     * from current replication run of the robot. Saves estimations.
+     */
     @Override
     protected void afterReplication() {
         int movesCount = robotRun.getMovesCount();
@@ -82,11 +120,17 @@ public class RobotMonteCarlo extends MonteCarlo {
         }
     }
 
+    /**
+     * Displays the results.
+     */
     @Override
     protected void afterSimulation() {
         Platform.runLater(afterSimulationCallback);
     }
 
+    /**
+     * @return Whether to save current replication result or not
+     */
     private boolean saveEstimation() {
         if (saveFromReplic > currentReplicNumber) {
             return false;

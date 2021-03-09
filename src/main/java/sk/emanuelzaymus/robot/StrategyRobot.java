@@ -2,6 +2,9 @@ package sk.emanuelzaymus.robot;
 
 import java.util.List;
 
+/**
+ * Robot which analyses its position on the playground and makes the best decision of the next move.
+ */
 public class StrategyRobot extends Robot {
 
     private final int mapperSize = 10;
@@ -13,6 +16,7 @@ public class StrategyRobot extends Robot {
     private boolean firstEndOfPlaygroundFound;
 
     /**
+     * Restarts the robot to the original state.
      * This method needs to be called after creation of this object.
      */
     @Override
@@ -23,6 +27,12 @@ public class StrategyRobot extends Robot {
         firstEndOfPlaygroundFound = false;
     }
 
+    /**
+     * Robots selects the best possible decision he can make. Robot prefers to go in the shape of spiral clockwise if it's possible.
+     *
+     * @param possibleMoves List of possible moves which the robot could potentially make
+     * @return Best possible move
+     */
     @Override
     public MoveOption move(List<MoveOption> possibleMoves) {
         MoveOption retMove;
@@ -71,6 +81,9 @@ public class StrategyRobot extends Robot {
         return retMove;
     }
 
+    /**
+     * Prints its playground mapper state. Debug purpose.
+     */
     public void print() {
         mapper.print();
     }

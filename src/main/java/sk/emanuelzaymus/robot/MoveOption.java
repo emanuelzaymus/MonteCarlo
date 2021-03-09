@@ -1,11 +1,17 @@
 package sk.emanuelzaymus.robot;
 
+/**
+ * Represents certain direction.
+ */
 public enum MoveOption {
     UP,
     RIGHT,
     DOWN,
     LEFT;
 
+    /**
+     * @return Opposite direction of this MoveOption. E.g.: UP -> DOWN, RIGHT -> LEFT, etc.
+     */
     public MoveOption getOppositeMove() {
         return switch (this) {
             case UP -> DOWN;
