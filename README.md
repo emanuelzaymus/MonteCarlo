@@ -6,4 +6,4 @@ Custom Monte Carlo simulation core.
 - Java 15
 - JavaFX
 
-![img](https://github.com/emanuelzaymus/MonteCarlo/blob/master/img/MonteCarlo-Robot.JPG)
+![img](https://github.com/emanuelzaymus/MonteCarlo/blob/master/readme_imgs/MonteCarlo-Robot.JPG)
